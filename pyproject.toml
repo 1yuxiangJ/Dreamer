@@ -1,0 +1,65 @@
+[project]
+name = "dreamer"
+version = "0.1.0"
+description = "Long-term memory service for MCP-compatible AI agents with an Awake-Sleep architecture."
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    # Web / server
+    "fastapi>=0.110",
+    "uvicorn[standard]>=0.30",
+    # MCP 协议
+    "mcp>=1.0",
+    # Agent
+    "langgraph>=0.2",
+    "langchain>=0.3",
+    "langchain-openai>=0.2",
+    # DB
+    "sqlalchemy>=2.0",
+    "asyncpg>=0.30",
+    "greenlet>=3.0",
+    "pgvector>=0.3",
+    # 调度
+    "apscheduler>=3.10",
+    # 配置
+    "pydantic>=2.7",
+    "pydantic-settings>=2.4",
+    "python-dotenv>=1.0",
+    # HTTP
+    "httpx>=0.27",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0",
+    "pytest-asyncio>=0.23",
+    "ruff>=0.5",
+    "mypy>=1.10",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/dreamer"]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]
+addopts = "-v --tb=short"
+markers = [
+    "integration: requires local PostgreSQL + pgvector test database",
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "N", "UP", "B", "SIM"]
+
+[tool.mypy]
+python_version = "3.11"
+strict = true
+ignore_missing_imports = true

@@ -1,0 +1,19 @@
+{
+  "_note": "Reference MCP configuration for Dreamer.",
+  "_location": "Project-scoped configuration can live at <project-root>/.mcp.json. User-scope configuration is managed by the host CLI.",
+  "_cli": "claude mcp add --transport http dreamer --scope project http://127.0.0.1:8000/mcp",
+
+  "mcpServers": {
+    "dreamer": {
+      "type": "http",
+      "url": "http://127.0.0.1:8000/mcp",
+      "description": "Long-term user memory service with Awake semantic operations and optional Sleep-time consolidation.",
+      "tools": {
+        "remember": "Record a fact about the user (preferences/habits/cross-project lessons). NEVER call for project-specific facts.",
+        "recall":   "Semantic search over user memory.",
+        "list_memory": "Get an overview of core blocks + archival count.",
+        "forget":   "Mark a fact as deleted (soft delete + audit log)."
+      }
+    }
+  }
+}

@@ -1,0 +1,23 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+        with:
+          python-version: "3.11"
+      - run: uv sync --all-extras
+      - run: uv run ruff check src tests scripts
+      - run: uv run mypy src
+      - run: uv run pytest
+        env:
+          DEEPSEEK_API_KEY: ci-placeholder
+          EMBED_API_KEY: ci-placeholder
+          DATABASE_URL: postgresql+asyncpg://ci:ci@localhost:5432/dreamer_ci

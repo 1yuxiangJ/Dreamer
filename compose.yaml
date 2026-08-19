@@ -1,0 +1,38 @@
+services:
+  postgres:
+    image: pgvector/pgvector:pg17
+    environment:
+      POSTGRES_DB: dreamer
+      POSTGRES_USER: dreamer
+      POSTGRES_PASSWORD: dreamer
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U dreamer -d dreamer"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+    volumes:
+      - dreamer-postgres:/var/lib/postgresql/data
+      - ./src/dreamer/db/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
+
+  dreamer:
+    build: .
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql+asyncpg://dreamer:dreamer@postgres:5432/dreamer
+      DEEPSEEK_API_KEY: ${DEEPSEEK_API_KEY:?set DEEPSEEK_API_KEY in .env}
+      DEEPSEEK_BASE_URL: ${DEEPSEEK_BASE_URL:-https://api.deepseek.com/v1}
+      DEEPSEEK_MODEL: ${DEEPSEEK_MODEL:-deepseek-chat}
+      EMBED_API_KEY: ${EMBED_API_KEY:?set EMBED_API_KEY in .env}
+      EMBED_BASE_URL: ${EMBED_BASE_URL:-https://dashscope.aliyuncs.com/compatible-mode/v1}
+      EMBED_MODEL: ${EMBED_MODEL:-text-embedding-v3}
+      EMBED_DIMENSIONS: ${EMBED_DIMENSIONS:-1024}
+      MCP_SERVER_HOST: 0.0.0.0
+      MCP_SERVER_PORT: 8000
+      SLEEP_SCHEDULER_ENABLED: ${SLEEP_SCHEDULER_ENABLED:-false}
+    ports:
+      - "8000:8000"
+
+volumes:
+  dreamer-postgres:

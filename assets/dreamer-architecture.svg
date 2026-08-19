@@ -1,0 +1,166 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="760" viewBox="0 0 1440 760" role="img" aria-labelledby="title desc">
+  <title id="title">Dreamer system architecture</title>
+  <desc id="desc">External MCP hosts connect to Dreamer. The online Awake path handles recall and asynchronous remember jobs, while the background Sleep path evolves a staging copy and commits atomically to PostgreSQL and pgvector.</desc>
+  <defs>
+    <marker id="arrow" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto">
+      <path d="M0,0 L9,4.5 L0,9 Z" fill="#4B6380"/>
+    </marker>
+    <marker id="arrow-blue" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto">
+      <path d="M0,0 L9,4.5 L0,9 Z" fill="#2563EB"/>
+    </marker>
+    <marker id="arrow-amber" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto">
+      <path d="M0,0 L9,4.5 L0,9 Z" fill="#C36A16"/>
+    </marker>
+    <style>
+      .title { font: 700 31px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; fill: #12233A; }
+      .subtitle { font: 400 15px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; fill: #63758A; }
+      .section { font: 700 12px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; letter-spacing: 1.4px; fill: #63758A; }
+      .box-title { font: 700 17px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; fill: #182B43; }
+      .box-copy { font: 400 13px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; fill: #63758A; }
+      .node-title { font: 700 15px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; fill: #182B43; }
+      .node-copy { font: 400 12px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; fill: #63758A; }
+      .tag { font: 700 11px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; letter-spacing: .8px; }
+      .flow { font: 600 11px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; fill: #4B6380; }
+      .stage { font: 600 11px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; fill: #7A4B10; }
+      .db-title { font: 700 15px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; fill: #174E86; }
+      .db-copy { font: 400 12px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; fill: #6684A3; }
+      .white-title { font: 700 15px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; fill: #FFFFFF; }
+      .white-copy { font: 400 12px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; fill: #DCEBFF; }
+    </style>
+  </defs>
+
+  <rect width="1440" height="760" fill="#FFFFFF"/>
+  <rect x="48" y="34" width="1344" height="1" fill="#E3EAF2"/>
+  <text x="56" y="80" class="section">DREAMER / SYSTEM ARCHITECTURE</text>
+  <text x="56" y="122" class="title">Awake-Sleep Long-Term Memory Service</text>
+  <text x="56" y="151" class="subtitle">Real-time memory access is isolated from background memory evolution.</text>
+
+  <!-- Column labels -->
+  <text x="56" y="221" class="section">MCP HOSTS</text>
+  <text x="316" y="221" class="section">DREAMER SERVICE</text>
+  <text x="996" y="221" class="section">MEMORY DATA PLANE</text>
+
+  <!-- External hosts -->
+  <rect x="56" y="242" width="216" height="416" rx="6" fill="#FFFFFF" stroke="#D5DEE8" stroke-width="2"/>
+  <rect x="56" y="242" width="216" height="8" rx="4" fill="#4B6380"/>
+  <circle cx="87" cy="288" r="13" fill="#EAF0F7"/>
+  <path d="M81 282h12v9H81z M84 294h6" fill="none" stroke="#4B6380" stroke-width="1.8" stroke-linejoin="round"/>
+  <text x="112" y="294" class="box-title">External Agent</text>
+  <text x="80" y="340" class="box-copy">Claude Code</text>
+  <text x="80" y="370" class="box-copy">Codex</text>
+  <text x="80" y="400" class="box-copy">Other MCP clients</text>
+  <line x1="80" y1="432" x2="248" y2="432" stroke="#E3EAF2"/>
+  <text x="80" y="465" class="node-title">Shared memory scope</text>
+  <text x="80" y="489" class="node-copy">One user profile, reusable</text>
+  <text x="80" y="509" class="node-copy">across clients and sessions.</text>
+  <rect x="80" y="557" width="168" height="54" rx="4" fill="#F4F7FB"/>
+  <text x="96" y="581" class="node-title">Streamable HTTP MCP</text>
+  <text x="96" y="601" class="node-copy">single integration point</text>
+
+  <!-- Dreamer service boundary -->
+  <rect x="316" y="242" width="636" height="416" rx="6" fill="#FFFFFF" stroke="#D5DEE8" stroke-width="2"/>
+
+  <!-- MCP server -->
+  <rect x="350" y="266" width="568" height="66" rx="4" fill="#EFF5FF" stroke="#B9D3F7" stroke-width="1.5"/>
+  <rect x="370" y="284" width="10" height="30" rx="2" fill="#2563EB"/>
+  <text x="397" y="293" class="box-title">MCP Server</text>
+  <text x="397" y="314" class="box-copy">remember, recall, list_memory, forget</text>
+  <rect x="775" y="282" width="121" height="33" rx="16" fill="#DBEAFE"/>
+  <text x="796" y="304" class="tag" fill="#1D4ED8">HOST INTERFACE</text>
+
+  <!-- Awake lane -->
+  <rect x="350" y="358" width="568" height="124" rx="4" fill="#F7FBFF" stroke="#C8DCF5" stroke-width="1.5"/>
+  <rect x="350" y="358" width="7" height="124" fill="#2563EB"/>
+  <rect x="375" y="375" width="67" height="23" rx="12" fill="#DBEAFE"/>
+  <text x="389" y="391" class="tag" fill="#1D4ED8">AWAKE</text>
+  <text x="458" y="392" class="box-title">Online memory path</text>
+
+  <rect x="375" y="412" width="236" height="51" rx="4" fill="#FFFFFF" stroke="#B9D3F7" stroke-width="1.5"/>
+  <text x="391" y="435" class="node-title">Awake Agent</text>
+  <text x="391" y="454" class="node-copy">LangGraph ReAct: recall and dedup</text>
+
+  <rect x="649" y="412" width="239" height="51" rx="4" fill="#FFFFFF" stroke="#B9D3F7" stroke-width="1.5"/>
+  <text x="665" y="435" class="node-title">Durable Remember Jobs</text>
+  <text x="665" y="454" class="node-copy">task table plus Worker</text>
+
+  <!-- Sleep lane -->
+  <rect x="350" y="506" width="568" height="124" rx="4" fill="#FFF9F0" stroke="#F1D4A8" stroke-width="1.5"/>
+  <rect x="350" y="506" width="7" height="124" fill="#C36A16"/>
+  <rect x="375" y="523" width="62" height="23" rx="12" fill="#FDE8C7"/>
+  <text x="390" y="539" class="tag" fill="#A9570A">SLEEP</text>
+  <text x="453" y="540" class="box-title">Background memory evolution</text>
+
+  <rect x="375" y="561" width="75" height="31" rx="3" fill="#FFFFFF" stroke="#F1D4A8"/>
+  <text x="395" y="581" class="stage">Plan</text>
+  <path d="M454 576H472" fill="none" stroke="#C36A16" stroke-width="1.8" marker-end="url(#arrow-amber)"/>
+  <rect x="478" y="561" width="99" height="31" rx="3" fill="#FFFFFF" stroke="#F1D4A8"/>
+  <text x="492" y="581" class="stage">Consolidate</text>
+  <path d="M581 576H599" fill="none" stroke="#C36A16" stroke-width="1.8" marker-end="url(#arrow-amber)"/>
+  <rect x="605" y="561" width="81" height="31" rx="3" fill="#FFFFFF" stroke="#F1D4A8"/>
+  <text x="620" y="581" class="stage">Promote</text>
+  <path d="M690 576H708" fill="none" stroke="#C36A16" stroke-width="1.8" marker-end="url(#arrow-amber)"/>
+  <rect x="714" y="561" width="78" height="31" rx="3" fill="#FFFFFF" stroke="#F1D4A8"/>
+  <text x="731" y="581" class="stage">Demote</text>
+  <path d="M796 576H814" fill="none" stroke="#C36A16" stroke-width="1.8" marker-end="url(#arrow-amber)"/>
+  <rect x="820" y="561" width="68" height="31" rx="3" fill="#FFFFFF" stroke="#F1D4A8"/>
+  <text x="836" y="581" class="stage">Resolve</text>
+  <rect x="375" y="603" width="513" height="17" rx="3" fill="#FDE8C7"/>
+  <text x="390" y="616" class="stage">Validate Core  /  bounded Repair loop  /  Reflect before commit</text>
+
+  <!-- Data plane -->
+  <rect x="996" y="242" width="388" height="416" rx="6" fill="#FFFFFF" stroke="#C8DCF5" stroke-width="2"/>
+  <rect x="996" y="242" width="388" height="70" rx="6" fill="#F1F7FE"/>
+  <rect x="996" y="290" width="388" height="22" fill="#F1F7FE"/>
+  <text x="1022" y="275" class="db-title">PostgreSQL + pgvector</text>
+  <text x="1022" y="297" class="db-copy">persistent user memory and audit state</text>
+
+  <rect x="1022" y="340" width="336" height="64" rx="4" fill="#F8FBFF" stroke="#C8DCF5"/>
+  <text x="1040" y="365" class="db-title">Core Blocks</text>
+  <text x="1040" y="386" class="db-copy">always-on structured user profile</text>
+
+  <rect x="1022" y="420" width="336" height="64" rx="4" fill="#F8FBFF" stroke="#C8DCF5"/>
+  <text x="1040" y="445" class="db-title">Archival Facts</text>
+  <text x="1040" y="466" class="db-copy">vector-searchable long-term facts</text>
+
+  <rect x="1022" y="500" width="157" height="76" rx="4" fill="#F8FBFF" stroke="#C8DCF5"/>
+  <text x="1040" y="528" class="db-title">Ops Log</text>
+  <text x="1040" y="549" class="db-copy">append-only audit</text>
+
+  <rect x="1201" y="500" width="157" height="76" rx="4" fill="#FFF9F0" stroke="#F1D4A8"/>
+  <text x="1219" y="528" class="db-title">Staging</text>
+  <text x="1219" y="549" class="db-copy">Sleep working copy</text>
+
+  <rect x="1022" y="597" width="336" height="35" rx="4" fill="#174E86"/>
+  <text x="1041" y="620" class="white-title">Atomic Swap  /  pending logs commit together</text>
+
+  <!-- Inter-service flows: all lines stay in whitespace -->
+  <path d="M272 299H350" fill="none" stroke="#4B6380" stroke-width="2.2" marker-end="url(#arrow)"/>
+  <rect x="287" y="282" width="39" height="19" rx="3" fill="#FFFFFF"/>
+  <text x="294" y="295" class="flow">MCP</text>
+
+  <path d="M488 332V412" fill="none" stroke="#2563EB" stroke-width="2.2" marker-end="url(#arrow-blue)"/>
+  <rect x="500" y="357" width="43" height="18" rx="3" fill="#FFFFFF"/>
+  <text x="507" y="370" class="flow">recall</text>
+
+  <path d="M770 332V412" fill="none" stroke="#4B6380" stroke-width="2.2" marker-end="url(#arrow)"/>
+  <rect x="781" y="357" width="61" height="18" rx="3" fill="#FFFFFF"/>
+  <text x="789" y="370" class="flow">remember</text>
+
+  <path d="M649 449H615" fill="none" stroke="#2563EB" stroke-width="2.2" marker-end="url(#arrow-blue)"/>
+  <text x="615" y="438" class="flow">Worker</text>
+
+  <path d="M918 298H996" fill="none" stroke="#4B6380" stroke-width="2.2" marker-end="url(#arrow)"/>
+  <rect x="925" y="278" width="67" height="18" rx="3" fill="#FFFFFF"/>
+  <text x="933" y="291" class="flow">list / forget</text>
+
+  <path d="M611 456V491H942V452H1022" fill="none" stroke="#2563EB" stroke-width="2.2" marker-end="url(#arrow-blue)"/>
+  <rect x="730" y="479" width="90" height="18" rx="3" fill="#FFFFFF"/>
+  <text x="739" y="492" class="flow">Core + Fact query</text>
+
+  <path d="M918 592H970V615H1022" fill="none" stroke="#C36A16" stroke-width="2.2" marker-end="url(#arrow-amber)"/>
+  <rect x="927" y="575" width="64" height="18" rx="3" fill="#FFFFFF"/>
+  <text x="936" y="588" class="flow">validated</text>
+
+  <text x="56" y="710" class="subtitle">Awake reads and writes the main memory tables. Sleep mutates only Staging until validation passes, then performs an atomic swap.</text>
+  <line x1="56" y1="731" x2="1384" y2="731" stroke="#E3EAF2"/>
+</svg>

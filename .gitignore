@@ -1,0 +1,68 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+dist/
+*.egg-info/
+.installed.cfg
+*.egg
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Virtual env
+.venv/
+venv/
+env/
+ENV/
+
+# Env (真实密钥,绝不提交)
+.env
+.env.local
+.env.*.local
+
+# IDE
+.vscode/
+.idea/
+.claude/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Project local
+logs/
+*.log
+db_dumps/
+*.sqlite3
+
+# Private project notes and local-only evaluation artifacts
+docs/private/
+docs/ARCHITECTURE.md
+docs/CODE_REVIEW.md
+docs/DECISIONS.md
+docs/DEMO.md
+docs/FINAL_VERIFICATION.md
+docs/INTERVIEW.md
+docs/LOCAL_SETUP_STATUS.md
+docs/PLAN.md
+docs/RESUME.md
+docs/STUDY-NOTES.md
+docs/construction-log/
+docs/research-notes/
+docs/superpowers/
+evals/
+src/dreamer/evaluation.py
+src/dreamer/regression_eval.py
+scripts/run_eval.py
+tests/test_evaluation.py
+scripts/claude-mneme.sh
+data/bulk_memory_seed_100.jsonl
+
+# Poetry lock
+poetry.lock
